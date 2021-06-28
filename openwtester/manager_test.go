@@ -13,7 +13,7 @@ var (
 	testApp        = "assets-adapter"
 	configFilePath = filepath.Join("conf")
 	dbFilePath = filepath.Join("data", "db")
-	dbFileName = "blockchain-CENNZ.db"
+	dbFileName = "blockchain-MMUI.db"
 
 )
 
@@ -24,7 +24,7 @@ func testInitWalletManager() *openw.WalletManager {
 	tc.ConfigDir = configFilePath
 	tc.EnableBlockScan = false
 	tc.SupportAssets = []string{
-		"CENNZ",
+		"MMUI",
 	}
 	return openw.NewWalletManager(tc)
 	//tm.Init()
@@ -32,7 +32,7 @@ func testInitWalletManager() *openw.WalletManager {
 
 func TestWalletManager_CreateWallet(t *testing.T) {
 	tm := testInitWalletManager()
-	w := &openwallet.Wallet{Alias: "HELLO CENNZ", IsTrust: true, Password: "12345678"}
+	w := &openwallet.Wallet{Alias: "HELLO MMUI MAINNET", IsTrust: true, Password: "xxxx"}
 	nw, key, err := tm.CreateWallet(testApp, w)
 	if err != nil {
 		log.Error(err)
@@ -48,7 +48,7 @@ func TestWalletManager_GetWalletInfo(t *testing.T) {
 
 	tm := testInitWalletManager()
 
-	wallet, err := tm.GetWalletInfo(testApp, "W7uWEkkJ4g85ixibXbe44cr5rkcxB3V8xu")
+	wallet, err := tm.GetWalletInfo(testApp, "xxxx")
 	if err != nil {
 		log.Error("unexpected error:", err)
 		return
@@ -77,9 +77,9 @@ func TestWalletManager_CreateAssetsAccount(t *testing.T) {
 
 	tm := testInitWalletManager()
 
-	walletID := "W7uWEkkJ4g85ixibXbe44cr5rkcxB3V8xu"
-	account := &openwallet.AssetsAccount{Alias: "CENNZ-3", WalletID: walletID, Required: 1, Symbol: "CENNZ", IsTrust: true}
-	account, address, err := tm.CreateAssetsAccount(testApp, walletID, "12345678", account, nil)
+	walletID := "xxxx"
+	account := &openwallet.AssetsAccount{Alias: "MMUI-MAINNET-1", WalletID: walletID, Required: 1, Symbol: "MMUI", IsTrust: true}
+	account, address, err := tm.CreateAssetsAccount(testApp, walletID, "xxxx", account, nil)
 	if err != nil {
 		log.Error(err)
 		return
@@ -95,7 +95,7 @@ func TestWalletManager_GetAssetsAccountList(t *testing.T) {
 
 	tm := testInitWalletManager()
 
-	walletID := "W7uWEkkJ4g85ixibXbe44cr5rkcxB3V8xu"
+	walletID := "xxxx"
 	list, err := tm.GetAssetsAccountList(testApp, walletID, 0, 10000000)
 	if err != nil {
 		log.Error("unexpected error:", err)
@@ -114,8 +114,8 @@ func TestWalletManager_CreateAddress(t *testing.T) {
 
 	tm := testInitWalletManager()
 
-	walletID := "W48Gx98MXbU938AL7iYfbeWpRUPdTjZJkC"
-	accountID := "4Q3BDMDEWbcxDoSkmN7FtGhJ833ckz7rSo2PLran1m88"
+	walletID := "xxxx"
+	accountID := "xxxx"
 	address, err := tm.CreateAddress(testApp, walletID, accountID, 10)
 	if err != nil {
 		log.Error(err)
@@ -131,8 +131,9 @@ func TestWalletManager_GetAddressList(t *testing.T) {
 
 	tm := testInitWalletManager()
 
-	walletID := "W48Gx98MXbU938AL7iYfbeWpRUPdTjZJkC"
-	accountID := "4Q3BDMDEWbcxDoSkmN7FtGhJ833ckz7rSo2PLran1m88"
+	walletID := "xxxx"
+	accountID := "xxxx"
+
 	list, err := tm.GetAddressList(testApp, walletID, accountID, 0, -1, false)
 	if err != nil {
 		log.Error("unexpected error:", err)

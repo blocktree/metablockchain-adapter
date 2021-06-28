@@ -16,7 +16,6 @@
 package openwtester
 
 import (
-	"strconv"
 	"testing"
 	"time"
 
@@ -43,7 +42,7 @@ func testGetAssetsAccountTokenBalance(tm *openw.WalletManager, walletID, account
 	log.Info("token balance:", balance.Balance)
 }
 
-func testCreateTransactionStep(tm *openw.WalletManager, walletID, accountID, to, amount, feeRate string, contract *openwallet.SmartContract) (*openwallet.RawTransaction, error) {
+func testCreateTransactionStep(tm *openw.WalletManager, walletID, accountID, to, amount, feeRate, memo string, contract *openwallet.SmartContract) (*openwallet.RawTransaction, error) {
 
 	//err := tm.RefreshAssetsAccountBalance(testApp, accountID)
 	//if err != nil {
@@ -51,7 +50,7 @@ func testCreateTransactionStep(tm *openw.WalletManager, walletID, accountID, to,
 	//	return nil, err
 	//}
 
-	rawTx, err := tm.CreateTransaction(testApp, walletID, accountID, amount, to, feeRate, "test", contract)
+	rawTx, err := tm.CreateTransaction(testApp, walletID, accountID, amount, to, feeRate, memo, contract, nil)
 
 	if err != nil {
 		log.Error("CreateTransaction failed, unexpected error:", err)
@@ -65,11 +64,10 @@ func testCreateSummaryTransactionStep(
 	tm *openw.WalletManager,
 	walletID, accountID, summaryAddress, minTransfer, retainedBalance, feeRate string,
 	start, limit int,
-	contract *openwallet.SmartContract,
-	feeSupportAccount *openwallet.FeesSupportAccount) ([]*openwallet.RawTransactionWithError, error) {
+	contract *openwallet.SmartContract) ([]*openwallet.RawTransactionWithError, error) {
 
 	rawTxArray, err := tm.CreateSummaryRawTransactionWithError(testApp, walletID, accountID, summaryAddress, minTransfer,
-		retainedBalance, feeRate, start, limit, contract, feeSupportAccount)
+		retainedBalance, feeRate, start, limit, contract, nil)
 
 	if err != nil {
 		log.Error("CreateSummaryTransaction failed, unexpected error:", err)
@@ -136,7 +134,7 @@ func ClearAddressNonce(tm *openw.WalletManager, walletID string, accountID strin
 	for i, w := range list {
 		log.Info("address[", i, "] :", w.Address)
 
-		key := "CENNZ-nonce"
+		key := "MMUI-nonce"
 		wrapper.SetAddressExtParam(w.Address, key, 0)
 	}
 	log.Info("address count:", len(list))
@@ -146,59 +144,15 @@ func ClearAddressNonce(tm *openw.WalletManager, walletID string, accountID strin
 	return nil
 }
 
-/*
-withdraw
-wallet : W7uWEkkJ4g85ixibXbe44cr5rkcxB3V8xu
-account : H7mDVFKgEJQm9okqVAivVjhffGNhsdEhLU3AcuooQZKM
-1 address : 5EuiJzHg1uGqPN5Rf28tdNSRzC8G6RoEJFHb44Z9rnkaze6d
-
-charge
-wallet : W48Gx98MXbU938AL7iYfbeWpRUPdTjZJkC
-account : 4Q3BDMDEWbcxDoSkmN7FtGhJ833ckz7rSo2PLran1m88
-1 address : 5Cg1R6qXijprZJ1z8wSqabRSAGc2z2Za9XdWD7oZaLVM1jk3
-2 address : 5CjFEnKJ7KJoBwcTLecvNqMQLEHWPrFp7kA7yLeSUvUNJjKH
-3 address : 5CsCkhuNtRC5Eb8p5yzBwdjpNGBhBNPXge2SRo952ep7H85u
-4 address : 5Dg7qNp9sNuUNK69qy6FxJjvunSXMTjJJKXD29WKej2CciDr
-5 address : 5EAEHJX44RmZ7zNqHzhHsHAMtLFnwKpKbL2dQCyaEERNH6X4
-6 address : 5EWi3fJfgbFzeB5dfqBFki1dBs3MrbZrY7NRGbTakJ6BGDMX
-7 address : 5EzrHFrA7ToWy7jjin76XZv8og2Hz9S4pUSGok6BBpCBRVdu
-8 address : 5GmrNXhbveHrwkPEgah8R5yyjE8Pq4kD9KqkY8K4bV9zNYhH
-9 address : 5H42ShpjPdEfC2JtjNpDgRdbn5YbzSqm9iKQLUMciq1vZhFz
-*/
 func TestTransfer(t *testing.T) {
 	tm := testInitWalletManager()
-	walletID := "W7uWEkkJ4g85ixibXbe44cr5rkcxB3V8xu"
-	accountID := "H7mDVFKgEJQm9okqVAivVjhffGNhsdEhLU3AcuooQZKM"
-	to := "5F6gkpLsrdFaWtUu4UH87qFJtRJb5DpLuN7UaDkspDwNef5D"
+	walletID := "xxxx"
+	accountID := "xxxx"
+	to := "did:ssid:xxxx"
 
-	//contract := openwallet.SmartContract{
-	//	ContractID:"",
-	//	Address:"1",
-	//	Symbol:"CENNZ",
-	//	Name:"CENNZ",
-	//	Token:"CENNZ",
-	//	Decimals:4,
-	//}
-	//
-	//testGetAssetsAccountTokenBalance(tm, walletID, accountID, contract)
-	//
-	//rawTx, err := testCreateTransactionStep(tm, walletID, accountID, to, "10", "", &contract)
-	//if err != nil {
-	//	return
-	//}
+	testGetAssetsAccountBalance(tm, walletID, accountID)
 
-	feeContract := openwallet.SmartContract{
-		ContractID:"",
-		Address:"2",
-		Symbol:"CPAY",
-		Name:"CPAY",
-		Token:"CPAY",
-		Decimals:4,
-	}
-
-	testGetAssetsAccountTokenBalance(tm, walletID, accountID, feeContract)
-
-	rawTx, err := testCreateTransactionStep(tm, walletID, accountID, to, "20", "", &feeContract)
+	rawTx, err := testCreateTransactionStep(tm, walletID, accountID, to, "0.01234", "", "xxxx",nil)
 	if err != nil {
 		return
 	}
@@ -221,59 +175,26 @@ func TestTransfer(t *testing.T) {
 	}
 }
 
-/*
-withdraw
-wallet : W7uWEkkJ4g85ixibXbe44cr5rkcxB3V8xu
-account : H7mDVFKgEJQm9okqVAivVjhffGNhsdEhLU3AcuooQZKM
-1 address : 5EuiJzHg1uGqPN5Rf28tdNSRzC8G6RoEJFHb44Z9rnkaze6d
-
-charge
-wallet : W48Gx98MXbU938AL7iYfbeWpRUPdTjZJkC
-account : 4Q3BDMDEWbcxDoSkmN7FtGhJ833ckz7rSo2PLran1m88
-1 address : 5Cg1R6qXijprZJ1z8wSqabRSAGc2z2Za9XdWD7oZaLVM1jk3
-2 address : 5CjFEnKJ7KJoBwcTLecvNqMQLEHWPrFp7kA7yLeSUvUNJjKH
-3 address : 5CsCkhuNtRC5Eb8p5yzBwdjpNGBhBNPXge2SRo952ep7H85u
-4 address : 5Dg7qNp9sNuUNK69qy6FxJjvunSXMTjJJKXD29WKej2CciDr
-5 address : 5EAEHJX44RmZ7zNqHzhHsHAMtLFnwKpKbL2dQCyaEERNH6X4
-6 address : 5EWi3fJfgbFzeB5dfqBFki1dBs3MrbZrY7NRGbTakJ6BGDMX
-7 address : 5EzrHFrA7ToWy7jjin76XZv8og2Hz9S4pUSGok6BBpCBRVdu
-8 address : 5GmrNXhbveHrwkPEgah8R5yyjE8Pq4kD9KqkY8K4bV9zNYhH
-9 address : 5H42ShpjPdEfC2JtjNpDgRdbn5YbzSqm9iKQLUMciq1vZhFz
-*/
 func TestBatchTransfer(t *testing.T) {
 	tm := testInitWalletManager()
-	walletID := "W7uWEkkJ4g85ixibXbe44cr5rkcxB3V8xu"
-	accountID := "H7mDVFKgEJQm9okqVAivVjhffGNhsdEhLU3AcuooQZKM"
-	toArr := make([]string, 0)
-	toArr = append(toArr, "5Cg1R6qXijprZJ1z8wSqabRSAGc2z2Za9XdWD7oZaLVM1jk3")
-	toArr = append(toArr, "5CjFEnKJ7KJoBwcTLecvNqMQLEHWPrFp7kA7yLeSUvUNJjKH")
-	toArr = append(toArr, "5CsCkhuNtRC5Eb8p5yzBwdjpNGBhBNPXge2SRo952ep7H85u")
-	toArr = append(toArr, "5Dg7qNp9sNuUNK69qy6FxJjvunSXMTjJJKXD29WKej2CciDr")
+	walletID := "xxxx"
+	accountID := "xxxx"
 
-	//contract := openwallet.SmartContract{
-	//	ContractID:"",
-	//	Address:"1",
-	//	Symbol:"CENNZ",
-	//	Name:"CENNZ",
-	//	Token:"CENNZ",
-	//	Decimals:4,
-	//}
-	contract := openwallet.SmartContract{
-		ContractID:"",
-		Address:"2",
-		Symbol:"CPAY",
-		Name:"CPAY",
-		Token:"CPAY",
-		Decimals:4,
-	}
+	//toArr := make([]string, 0)
+	//toArr = append(toArr, "xxxx")
 
-	for i := 0; i < len(toArr); i++{
-		to := toArr[i]
+	//amountArr := make([]string, 0)
+	//amountArr = append(amountArr, "0.01234")
+
+	memo := "12345678901234567890"
+
+	for i := 0; i < 80; i++{
+		to := "did:ssid:xxxx"
+		amount := "0.01234"
+		memo = memo + "aaaaa"
 		testGetAssetsAccountBalance(tm, walletID, accountID)
 
-		testGetAssetsAccountTokenBalance(tm, walletID, accountID, contract)
-
-		rawTx, err := testCreateTransactionStep(tm, walletID, accountID, to, "1.631"+strconv.FormatInt(int64(i), 10), "", &contract)
+		rawTx, err := testCreateTransactionStep(tm, walletID, accountID, to, amount, "", memo,nil)
 		if err != nil {
 			return
 		}
@@ -299,58 +220,20 @@ func TestBatchTransfer(t *testing.T) {
 	}
 }
 
-/**
-	feeSupport
-	wallet : W7uWEkkJ4g85ixibXbe44cr5rkcxB3V8xu
-	account : 48cZBtzDFbsTYK2PZ2HrTh799ZxAZW5U6VsbAyv2SWFm
-	address : 5CpbevWzpUVcmikdj2fApxd3Aip6cRu2Lc3cjRKKwFbT1wVh
-
-	charge
-	wallet : W48Gx98MXbU938AL7iYfbeWpRUPdTjZJkC
-	account : 4Q3BDMDEWbcxDoSkmN7FtGhJ833ckz7rSo2PLran1m88
-
-	withdraw
-	wallet : W7uWEkkJ4g85ixibXbe44cr5rkcxB3V8xu
-	account : H7mDVFKgEJQm9okqVAivVjhffGNhsdEhLU3AcuooQZKM
-	1 address : 5EuiJzHg1uGqPN5Rf28tdNSRzC8G6RoEJFHb44Z9rnkaze6d
- */
 func TestSummary(t *testing.T) {
 	tm := testInitWalletManager()
 
-	walletID := "W48Gx98MXbU938AL7iYfbeWpRUPdTjZJkC"
-	accountID := "4Q3BDMDEWbcxDoSkmN7FtGhJ833ckz7rSo2PLran1m88"
-	summaryAddress := "5EuiJzHg1uGqPN5Rf28tdNSRzC8G6RoEJFHb44Z9rnkaze6d"
+	walletID := "xxxx"
+	accountID := "xxxx"
+	summaryAddress := "xxxx"
 
 	ClearAddressNonce(tm, walletID, accountID)
 
-	feesSupport := openwallet.FeesSupportAccount{
-		AccountID: "48cZBtzDFbsTYK2PZ2HrTh799ZxAZW5U6VsbAyv2SWFm",
-		//FixSupportAmount: "0.01",
-		FeesSupportScale: "",
-	}
-
-	//contract := openwallet.SmartContract{
-	//	Address:  "1",
-	//	Symbol:   "CENNZ",
-	//	Name:     "CENNZ",
-	//	Token:    "CENNZ",
-	//	Decimals: 4,
-	//}
-	contract := openwallet.SmartContract{
-		Address:  "2",
-		Symbol:   "CPAY",
-		Name:     "CPAY",
-		Token:    "CPAY",
-		Decimals: 4,
-	}
-
 	testGetAssetsAccountBalance(tm, walletID, accountID)
 
-	testGetAssetsAccountTokenBalance(tm, walletID, accountID, contract)
-
 	rawTxArray, err := testCreateSummaryTransactionStep(tm, walletID, accountID,
-		summaryAddress, "1.51", "1.5", "",
-		0, 100, &contract, &feesSupport)
+		summaryAddress, "0.01", "0.01", "",
+		0, 100, nil)
 	if err != nil {
 		log.Errorf("CreateSummaryTransaction failed, unexpected error: %v", err)
 		return
@@ -379,5 +262,4 @@ func TestSummary(t *testing.T) {
 			return
 		}
 	}
-
 }

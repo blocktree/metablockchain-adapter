@@ -6,7 +6,7 @@ import (
 )
 
 func TestGetNormalHash(t *testing.T) {
-	hash := "ed997bada4af7bb1902f2d5bcdf1bbd13cbdf437c003e3789a29d8af8630ddc0"
+	hash := "xxxx"
 
 	normalHash := GetNormalHash(hash)
 

@@ -17,6 +17,8 @@ package openwtester
 
 import (
 	"github.com/blocktree/openwallet/v2/common/file"
+	"github.com/tidwall/gjson"
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -26,14 +28,27 @@ import (
 	"github.com/blocktree/openwallet/v2/openwallet"
 )
 
+type SubscribeTestCase struct{
+	Name		string
+	ToAddress 	string
+	Amount		string
+	Memo		string
+	Height		uint64
+	Txid		string
+	Ok			bool
+}
+
 ////////////////////////// 测试单个扫描器 //////////////////////////
 
 type subscriberSingle struct {
+	testCaseArr	[]SubscribeTestCase
 }
 
 //BlockScanNotify 新区块扫描完成通知
 func (sub *subscriberSingle) BlockScanNotify(header *openwallet.BlockHeader) error {
-	log.Notice("header:", header)
+	//j, _ := json.Marshal(header)
+	//headerJSON := string(j)
+	//log.Notice("header:", headerJSON)
 	return nil
 }
 
@@ -51,6 +66,91 @@ func (sub *subscriberSingle) BlockExtractDataNotify(sourceKey string, data *open
 
 	log.Std.Notice("data.Transaction: %+v", data.Transaction)
 
+	for i := 0; i < len(sub.testCaseArr); i++{
+		testCase := sub.testCaseArr[i]
+
+		if testCase.Ok {
+			continue
+		}
+
+		if testCase.Name == sourceKey {
+			for _, output := range data.TxOutputs {
+				isAddressRight := false
+				if output.Address == testCase.ToAddress+":"+testCase.Amount{	//output 符合
+					isAddressRight = true
+				}
+
+				isOutputTxIDRight := false
+				if output.TxID == testCase.Txid {
+					isOutputTxIDRight = true
+				}
+
+				isOutputAmountRight := false
+				if output.Amount == testCase.Amount {
+					isOutputAmountRight = true
+				}
+
+				isOutputHeightRight := false
+				if output.BlockHeight == testCase.Height {
+					isOutputHeightRight = true
+				}
+
+				if isAddressRight && isOutputTxIDRight && isOutputAmountRight && isOutputHeightRight{
+					isTransactionTxIDRight := false
+					if data.Transaction.TxID == testCase.Txid {
+						isTransactionTxIDRight = true
+					}
+
+					isTransactionToRight := false
+					for _, toItem := range data.Transaction.To {
+						if toItem==testCase.ToAddress+":"+testCase.Amount{
+							isTransactionToRight = true
+							break
+						}
+					}
+
+					isTransactionHeightRight := false
+					if data.Transaction.BlockHeight == testCase.Height {
+						isTransactionHeightRight = true
+					}
+
+					isTransactionStatusRight := false
+					if data.Transaction.Status == "1" {
+						isTransactionStatusRight = true
+					}
+
+					isTransactionMemoRight := false
+					extParamJSON := gjson.Parse( data.Transaction.ExtParam )
+					if gjson.Get( extParamJSON.Raw, "memo" ).Exists() {
+						memo := gjson.Get( extParamJSON.Raw, "memo").String()
+						if memo==testCase.Memo {
+							isTransactionMemoRight = true
+						}
+					}
+
+					if isTransactionTxIDRight && isTransactionToRight && isTransactionHeightRight && isTransactionStatusRight && isTransactionMemoRight{
+						sub.testCaseArr[i].Ok = true
+						log.Std.Notice("Test Case %+v is ok", testCase.Name )
+					}
+				}
+			}
+		}
+	}
+
+	okTimes := 0
+	for i := 0; i < len(sub.testCaseArr); i++{
+		testCase := sub.testCaseArr[i]
+
+		if testCase.Ok {
+			okTimes++
+		}
+
+		if okTimes==len(sub.testCaseArr) {
+			log.Std.Info("All Test Case Finished, Over !!!")
+			os.Exit(0)
+		}
+	}
+
 	return nil
 }
 
@@ -58,17 +158,49 @@ func (sub *subscriberSingle) BlockExtractSmartContractDataNotify(sourceKey strin
 	return nil
 }
 
+//BlockScanNotify 新区块扫描完成通知
+func (sub *subscriberSingle) InitTestCases() error {
+	testCase := SubscribeTestCase{}
+	testCase.Name = "test"
+
+	testCaseArr := make([]SubscribeTestCase, 0)
+
+	//// case 1 (普通转账) :
+	//testCase = SubscribeTestCase{
+	//	Name:        "xxxx",
+	//	ToAddress:   "did:ssid:xxxx",
+	//	Amount:      "0.01111",
+	//	Memo:		 "xxxx",
+	//	Height:   1111,
+	//	Txid:   "0xxxxx",
+	//}
+	//testCaseArr = append(testCaseArr, testCase)
+
+	sub.testCaseArr = testCaseArr
+
+	return nil
+}
+
 func TestSubscribeAddress(t *testing.T) {
 
 	var (
 		endRunning = make(chan bool, 1)
-		symbol     = "CENNZ"
-		addrs      = map[string]string{
-			"5EsHcnpQe4dnyinuvzvMEFCMTfxaVBdwSE4nPzEvStkaZ6Gy": "fee-support-1",
-			"5E2Y17D8wr59XPoUq5jp6syqP92on6cyjyv9MnX1KewuKTEi": "sender-1",
-			"5DhxWVxqf8E5rzYBDmCDniX9eb4L9Xr2U2WqgEX3ntiBrz2r": "charge-1",
-		}
+		symbol     = "MMUI"
+		addrs      = map[string]string{}
 	)
+
+	sub := subscriberSingle{}
+	sub.InitTestCases()
+
+	for i := 0; i < len(sub.testCaseArr); i++{
+		testCase := sub.testCaseArr[i]
+
+		addrs[ testCase.ToAddress ] = testCase.Name
+	}
+
+	if len( sub.testCaseArr )==0 {
+		addrs[ "did:ssid:xxxx" ] = "send-1"
+	}
 
 	//GetSourceKeyByAddress 获取地址对应的数据源标识
 	scanTargetFunc := func(target openwallet.ScanTarget) (string, bool) {
@@ -77,17 +209,6 @@ func TestSubscribeAddress(t *testing.T) {
 			return "", false
 		}
 		return key, true
-	}
-	scanTargetFuncV2 := func(target openwallet.ScanTargetParam) openwallet.ScanTargetResult {
-		sourceKey, ok := scanTargetFunc(openwallet.ScanTarget{
-			Address:          target.ScanTarget,
-			Symbol:           symbol,
-			BalanceModelType: openwallet.BalanceModelTypeAddress,
-		})
-		return openwallet.ScanTargetResult{
-			SourceKey: sourceKey,
-			Exist:     ok,
-		}
 	}
 
 	assetsMgr, err := openw.GetAssetsAdapter(symbol)
@@ -124,17 +245,26 @@ func TestSubscribeAddress(t *testing.T) {
 		scanner.SetBlockchainDAI(dai)
 	}
 
-	scanner.SetRescanBlockHeight(5408335)
+	if len( sub.testCaseArr )>0 {
+		scanner.SetRescanBlockHeight( sub.testCaseArr[0].Height )
+	}else{
+		scanner.SetRescanBlockHeight(1111)
+	}
 
 	if scanner == nil {
 		log.Error(symbol, "is not support block scan")
 		return
 	}
 
-	scanner.SetBlockScanTargetFuncV2(scanTargetFuncV2)
+	scanner.SetBlockScanTargetFunc(scanTargetFunc)
 
-	sub := subscriberSingle{}
 	scanner.AddObserver(&sub)
+
+	for i := 0; i < len(sub.testCaseArr); i++{
+		testCase := sub.testCaseArr[i]
+
+		scanner.ScanBlock(testCase.Height)
+	}
 
 	scanner.Run()
 

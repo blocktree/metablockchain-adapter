@@ -1,4 +1,4 @@
-package cennzTransaction
+package metablockchainTransaction
 
 import (
 	"fmt"
@@ -11,6 +11,7 @@ func Test_Encode(t *testing.T) {
 		1: "04",
 		2: "08",
 		63: "fc",
+		48: "60",
 		64: "0101",
 		128: "0102",
 		192: "0103",

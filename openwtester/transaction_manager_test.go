@@ -88,7 +88,9 @@ func TestWalletManager_GetTransactionByWxID(t *testing.T) {
 	wxID := openwallet.GenTransactionWxID(&openwallet.Transaction{
 		TxID: "bfa6febb33c8ddde9f7f7b4d93043956cce7e0f4e95da259a78dc9068d178fee",
 		Coin: openwallet.Coin{
-			Symbol:     "DOT",
+			Symbol:     "MMUI",
+
+
 			IsContract: false,
 			ContractID: "",
 		},
@@ -105,8 +107,8 @@ func TestWalletManager_GetTransactionByWxID(t *testing.T) {
 
 func TestWalletManager_GetAssetsAccountBalance(t *testing.T) {
 	tm := testInitWalletManager()
-	walletID := "WGqq1apvBWXGsxnYtLr5JbeAWcfxUc96VS"
-	accountID := "CSHjefYb4BePiovVq9Kjv9ewkh7iQgWHHP4EqqMtaUDw"
+	walletID := "xxxx"
+	accountID := "xxxx"
 
 	balance, err := tm.GetAssetsAccountBalance(testApp, walletID, accountID)
 	if err != nil {
@@ -118,8 +120,8 @@ func TestWalletManager_GetAssetsAccountBalance(t *testing.T) {
 
 func TestWalletManager_GetAssetsAccountTokenBalance(t *testing.T) {
 	tm := testInitWalletManager()
-	walletID := "WEqcj8FDLvf3uAS44ChEutM6oUbmgN23bf"
-	accountID := "GVK6daCGmqKHfe2zEbpixarAJ9HEqawyAm9jFvmqU59Q"
+	walletID := "xxxx"
+	accountID := "xxxx"
 
 	contract := openwallet.SmartContract{
 		Address:  "f2033ede578e17fa6231047265010445bca8cf1c",
@@ -140,7 +142,7 @@ func TestWalletManager_GetAssetsAccountTokenBalance(t *testing.T) {
 func TestWalletManager_GetEstimateFeeRate(t *testing.T) {
 	tm := testInitWalletManager()
 	coin := openwallet.Coin{
-		Symbol: "CENNZ",
+		Symbol: "MMUI",
 	}
 	feeRate, unit, err := tm.GetEstimateFeeRate(coin)
 	if err != nil {
@@ -151,7 +153,7 @@ func TestWalletManager_GetEstimateFeeRate(t *testing.T) {
 }
 
 func TestGetAddressBalance(t *testing.T) {
-	symbol := "CENNZ"
+	symbol := "MMUI"
 	assetsMgr, err := openw.GetAssetsAdapter(symbol)
 	if err != nil {
 		log.Error(symbol, "is not support")

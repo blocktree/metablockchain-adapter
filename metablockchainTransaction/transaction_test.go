@@ -1,45 +1,45 @@
-package cennzTransaction
+package metablockchainTransaction
 
 import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/blocktree/go-owcrypt"
 	"testing"
 )
 
-// 0xa0 0401 04 7dd904f18b1e42c7f2b62429245771f51749a42be06c02bd4251df69f2c141df 0350dc88f400 30000025000000050000000d0971c150a9741b8719b3c6c9c2e96ec5b2e3fb83641af868e6650f3e263ef00d0971c150a9741b8719b3c6c9c2e96ec5b2e3fb83641af868e6650f3e263ef0
-//      0401 04 7dd904f18b1e42c7f2b62429245771f51749a42be06c02bd4251df69f2c141df 0750dc88f400 0010000025000000050000000d0971c150a9741b8719b3c6c9c2e96ec5b2e3fb83641af868e6650f3e263ef00d0971c150a9741b8719b3c6c9c2e96ec5b2e3fb83641af868e6650f3e263ef0
+func Test_MMUI_transaction(t *testing.T) {
+	senderPubKey := "xxxx"
 
-// 0x39028488dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee00ec59fa45d747eeaca87ff82fb7cd41137fcc976f6da4e010e46cc337d0033f1171a8b38f2692d467ba1019b7cbd66959ae3b1e632308ea4a5a2dd2ab27818f0c003000000401047dd904f18b1e42c7f2b62429245771f51749a42be06c02bd4251df69f2c141df0327ee88f4
-// 0x3d028486377c388ec1afc558ef40c5edb3b4f7bba1a697b1bb711ece23fc7cdbfe2e1f0054c9cc865e71f4da69821dee315fe9fc01c422d954128740a76123c78392ecb2ff69eeaf6c307f133c8f4728f8e7958fbb39d8a3cb603f12482f2ebfaeada501001000000401047dd904f18b1e42c7f2b62429245771f51749a42be06c02bd4251df69f2c141df0727ee88f400
-
-// 5F6gkpLsrdFaWtUu4UH87qFJtRJb5DpLuN7UaDkspDwNef5D -> 5EuiJzHg1uGqPN5Rf28tdNSRzC8G6RoEJFHb44Z9rnkaze6d
-func Test_CENNZ_transaction(t *testing.T) {
+	//pubkey, _ := hex.DecodeString(senderPubKey)
+	//edpub, _ := owcrypt.CURVE25519_convert_Ed_to_X(pubkey)
+	//
+	//senderPubKey = hex.EncodeToString( edpub )
 
 	tx := TxStruct{
 		//发送方公钥
-		SenderPubkey:    "86377c388ec1afc558ef40c5edb3b4f7bba1a697b1bb711ece23fc7cdbfe2e1f",//"88dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee",
+		SenderPubkey:    senderPubKey,
 		//接收方公钥
-		RecipientPubkey: "7dd904f18b1e42c7f2b62429245771f51749a42be06c02bd4251df69f2c141df",
+		RecipientPubkey: "xxxx",
 		//发送金额（最小单位）
-		Amount:         1303822400,
+		Amount:         3087655,
 		//资产ID
-		AssetId:         1,
+		Memo:         "1234",
 		//nonce
-		Nonce:           8,
+		Nonce:           1,
 		//手续费（最小单位）
 		Fee:             0,
 		Tip:             0,
 		//当前高度
-		BlockHeight:     4571393,
+		BlockHeight:     3191328,
 		//当前高度区块哈希
-		BlockHash:       "0d0971c150a9741b8719b3c6c9c2e96ec5b2e3fb83641af868e6650f3e263ef0",
+		BlockHash:       "xxxx",
 		//创世块哈希
-		GenesisHash:     "0d0971c150a9741b8719b3c6c9c2e96ec5b2e3fb83641af868e6650f3e263ef0",
+		GenesisHash:     "xxxx",
 		//spec版本
-		SpecVersion:     37,
+		SpecVersion:     5,
 		//Transaction版本
-		TxVersion: 5,
+		TxVersion: 1,
 	}
 
 	// 创建空交易单和待签消息
@@ -52,7 +52,7 @@ func Test_CENNZ_transaction(t *testing.T) {
 	fmt.Println("待签消息 ： ",message)
 
 	// 签名
-	prikey, _ := hex.DecodeString("e86bcaaab0a5aa5e3f3b0885db7e932e34eddb5a620b6bcc097a4b236a5a0354")
+	prikey, _ := hex.DecodeString("xxxx")
 	signature, err := SignTransaction(message, prikey)
 	if err != nil {
 		t.Error("sign failed")
@@ -94,6 +94,35 @@ func Test_decode(t *testing.T) {
 	//fmt.Println(en)
 }
 
-func Test_Verify(t *testing.T){
+func Test_regist_vc(t *testing.T){
+	IDENTIFIER_PREFIX := "did:ssid:";
+	uid := "x3";
 
+	ssidVc := SsidVc{
+		Did : IDENTIFIER_PREFIX+uid,
+		PublicKey: "xxxx",
+	}
+
+	ssidVcJSONBytes, _ := json.Marshal(ssidVc)
+
+	fmt.Println( string(ssidVcJSONBytes) )
+	fmt.Println( ssidVcJSONBytes )
+
+	ssidVcHash := owcrypt.Hash(ssidVcJSONBytes, 0, owcrypt.HASH_ALG_SHA256)
+	fmt.Println( hex.EncodeToString(ssidVcHash) )
+
+	ssidVcNormalHash := GetNormalHash( hex.EncodeToString(ssidVcHash) )
+	fmt.Println( "0x"+ssidVcNormalHash )
+
+	privateKey := []byte{}
+	fmt.Println(privateKey)
+
+	hashBytes, _ := hex.DecodeString(ssidVcNormalHash)
+
+	signature, _, retCode := owcrypt.Signature(privateKey, nil, hashBytes, owcrypt.ECC_CURVE_ED25519_NORMAL)
+	if retCode != owcrypt.SUCCESS {
+		fmt.Println("sign failed")
+	}
+	fmt.Println( "0x" + hex.EncodeToString(signature) )
+	fmt.Println( "0xxxxx")
 }
