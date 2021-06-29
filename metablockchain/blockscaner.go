@@ -981,15 +981,18 @@ func (bs *MMUIBlockScanner) GetBalanceByAddress(address ...string) ([]*openwalle
 	addrsBalance := make([]*openwallet.Balance, 0)
 
 	for _, addr := range address {
+		bs.wm.Log.Std.Info("block scanner addr : %v", addr)
 		did, err := bs.wm.GetDidByAddress(addr)
 		if err != nil {
 			return nil, err
 		}
+		bs.wm.Log.Std.Info("block scanner addr : %v, did : %v", addr, did)
 
 		balance, err := bs.wm.ApiClient.getBalance(did)
 		if err != nil {
 			return nil, err
 		}
+		bs.wm.Log.Std.Info("block scanner addr : %v, did : %v, balance : %v", addr, did, balance)
 
 		addrsBalance = append(addrsBalance, &openwallet.Balance{
 			Symbol:  bs.wm.Symbol(),
