@@ -628,11 +628,13 @@ func (bs *MMUIBlockScanner) InitExtractOutputResult(tx *Transaction, result *Ext
 		toAmount := toArr[ len(toArr)-1 ]
 
 		accountID, ok := scanTargetFunc(openwallet.ScanTarget{Alias: toAddr, Symbol: bs.wm.Symbol(), BalanceModelType: bs.wm.BalanceModelType()})
-
-		accountIDAddrType, ok1 := scanTargetFunc(openwallet.ScanTarget{Address: toAddr, Symbol: bs.wm.Symbol(), BalanceModelType: bs.wm.BalanceModelType()})
-
 		bs.wm.Log.Info("result.TxID:", result.TxID, ", toAddr:", toAddr, ", memo:", tx.ToTrxDetailArr[0].Memo, ", accountID:", accountID, ", ok:", ok)
+
+		accountIDAddrType, ok1 := scanTargetFunc(openwallet.ScanTarget{Address: toAddr, Symbol: bs.wm.Symbol(), BalanceModelType: openwallet.BalanceModelTypeAddress})
 		bs.wm.Log.Info("result.TxID:", result.TxID, ", toAddr:", toAddr, ", memo:", tx.ToTrxDetailArr[0].Memo, ", accountIDAddrType:", accountIDAddrType, ", ok1:", ok1)
+
+		accountIDAccountType, ok2 := scanTargetFunc(openwallet.ScanTarget{Address: toAddr, Symbol: bs.wm.Symbol(), BalanceModelType: openwallet.BalanceModelTypeAccount})
+		bs.wm.Log.Info("result.TxID:", result.TxID, ", toAddr:", toAddr, ", memo:", tx.ToTrxDetailArr[0].Memo, ", accountIDAccountType:", accountIDAccountType, ", ok2:", ok2)
 
 		if ok {
 			txExtractData := result.extractData[accountID]
