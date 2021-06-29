@@ -152,6 +152,12 @@ func (wm *WalletManager) GetSmartContractDecoder() openwallet.SmartContractDecod
 	return wm.ContractDecoder
 }
 
+//BalanceModelType 余额模型类型
+func (wm *WalletManager) BalanceModelType() openwallet.BalanceModelType {
+	return openwallet.BalanceModelTypeAccount
+}
+
+
 //LoadAssetsConfig 加载外部配置
 func (wm *WalletManager) LoadAssetsConfig(c config.Configer) error {
 
