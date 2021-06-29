@@ -522,6 +522,8 @@ func (bs *MMUIBlockScanner) extractTransaction(trx *Transaction, result *Extract
 		trx.ToTrxDetailArr[index].AmountDec = amount_dec_str
 	}
 
+	bs.wm.Log.Info("result.TxID: %v, toAddr: %v, memo: %v", result.TxID, from)
+
 	//订阅地址为交易单中的发送者
 	accountID1, ok1 := scanTargetFunc(openwallet.ScanTarget{Alias: from, Symbol: bs.wm.Symbol(), BalanceModelType: openwallet.BalanceModelTypeAccount})
 	//订阅地址为交易单中的接收者
@@ -624,6 +626,8 @@ func (bs *MMUIBlockScanner) InitExtractOutputResult(tx *Transaction, result *Ext
 
 		toAddr := IDENTIFIER_PREFIX + toArr[ len(toArr)-2 ]
 		toAmount := toArr[ len(toArr)-1 ]
+
+		bs.wm.Log.Info("result.TxID: %v, toAddr: %v, memo: %v", result.TxID, toAddr, tx.ToTrxDetailArr[0].Memo)
 
 		accountID, ok := scanTargetFunc(openwallet.ScanTarget{Alias: toAddr, Symbol: bs.wm.Symbol(), BalanceModelType: openwallet.BalanceModelTypeAccount})
 
@@ -981,18 +985,15 @@ func (bs *MMUIBlockScanner) GetBalanceByAddress(address ...string) ([]*openwalle
 	addrsBalance := make([]*openwallet.Balance, 0)
 
 	for _, addr := range address {
-		bs.wm.Log.Std.Info("block scanner addr : %v", addr)
 		did, err := bs.wm.GetDidByAddress(addr)
 		if err != nil {
 			return nil, err
 		}
-		bs.wm.Log.Std.Info("block scanner addr : %v, did : %v", addr, did)
 
 		balance, err := bs.wm.ApiClient.getBalance(did)
 		if err != nil {
 			return nil, err
 		}
-		bs.wm.Log.Std.Info("block scanner addr : %v, did : %v, balance : %v", addr, did, balance)
 
 		addrsBalance = append(addrsBalance, &openwallet.Balance{
 			Symbol:  bs.wm.Symbol(),
