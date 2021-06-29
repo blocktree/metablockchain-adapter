@@ -625,7 +625,7 @@ func (bs *MMUIBlockScanner) InitExtractOutputResult(tx *Transaction, result *Ext
 		toAddr := IDENTIFIER_PREFIX + toArr[ len(toArr)-2 ]
 		toAmount := toArr[ len(toArr)-1 ]
 
-		accountID, ok := scanTargetFunc(openwallet.ScanTarget{Alias: toAddr, Symbol: bs.wm.Symbol(), BalanceModelType: openwallet.BalanceModelTypeAddress})
+		accountID, ok := scanTargetFunc(openwallet.ScanTarget{Alias: toAddr, Symbol: bs.wm.Symbol(), BalanceModelType: openwallet.BalanceModelTypeAccount})
 
 		if ok {
 			txExtractData := result.extractData[accountID]
