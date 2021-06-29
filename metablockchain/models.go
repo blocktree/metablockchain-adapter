@@ -80,6 +80,9 @@ type Extrinsic struct {
 	Nonce		uint64
 	Fee         string
 	Status      string
+
+	FromAddr	string
+	ToAddr		string
 }
 
 type Transaction struct {
@@ -98,6 +101,9 @@ type Transaction struct {
 	//FromArr     []string //@required 格式："地址":"数量(带小数)":资产id
 	ToTrxDetailArr       []TrxDetail
 	FromTrxDetailArr     []TrxDetail
+
+	FromAddr	string
+	ToAddr		string
 }
 
 type TrxDetail struct {
@@ -259,6 +265,12 @@ func GetTransactionInBlock(json *gjson.Result, symbol string) ([]Transaction, er
 			memoArr = append(memoArr, memo)
 			//fee := gjson.Get(extrinsicJSON.Raw, "fee").String()
 
+			toAddr := ""
+			args := gjson.Get(extrinsicJSON.Raw, "args").Array()
+			if len(args)>0 {
+				toAddr = gjson.Get( args[0].Raw, "Id").String()
+			}
+
 			extrinsic := Extrinsic{
 				ExtrinsicHash:       txid,
 				Section:          	  section,
@@ -273,6 +285,7 @@ func GetTransactionInBlock(json *gjson.Result, symbol string) ([]Transaction, er
 				Status:               "0",
 				Nonce:                nonce,
 				MemoArr:			  memoArr,
+				ToAddr:				  toAddr,
 			}
 
 			extrinsicMap[txid] = extrinsic
@@ -325,6 +338,7 @@ func GetTransactionInBlock(json *gjson.Result, symbol string) ([]Transaction, er
 			FromTrxDetailArr: fromTrxDetailArr,
 			Fee :             0,
 			TxIndex:          extrinsic.ExtrinsicIndex,
+			ToAddr:			  extrinsic.ToAddr,
 		}
 
 		transactions = append(transactions, transaction)
