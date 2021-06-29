@@ -256,6 +256,9 @@ func GetTransactionInBlock(json *gjson.Result, symbol string) ([]Transaction, er
 			memo := gjson.Get(extrinsicJSON.Raw, "memo").String()
 			nonce := gjson.Get(extrinsicJSON.Raw, "nonce").Uint()
 
+			from = RemoveSpecialChar(from)
+			to = RemoveSpecialChar(to)
+
 			toStr := to + ":" + amount
 
 			toArr := make([]string, 0)
@@ -373,4 +376,17 @@ func RemoveOxToAddress(addr string) string {
 		return addr[2:]
 	}
 	return addr
+}
+
+func RemoveSpecialChar(did string) string {
+	result := []byte{}
+	for i := 0; i < len(did); i++ {
+		ch := did[i]
+		if ch==0x00{
+			continue
+		}
+		//fmt.Println(ch)
+		result = append(result, ch)
+	}
+	return string(result)
 }

@@ -630,14 +630,14 @@ func (bs *MMUIBlockScanner) InitExtractOutputResult(tx *Transaction, result *Ext
 		accountID, ok := scanTargetFunc(openwallet.ScanTarget{Alias: toAddr, Symbol: bs.wm.Symbol(), BalanceModelType: bs.wm.BalanceModelType()})
 		bs.wm.Log.Info("result.TxID:", result.TxID, ", toAddr:", toAddr, ", memo:", tx.ToTrxDetailArr[0].Memo, ", accountID:", accountID, ", ok:", ok)
 
-		accountIDTest, ok1 := scanTargetFunc(openwallet.ScanTarget{Address: toAddr, Symbol: bs.wm.Symbol(), BalanceModelType: openwallet.BalanceModelTypeAddress})
-		bs.wm.Log.Info("result.TxID:", result.TxID, ", toAddr:", toAddr, ", memo:", tx.ToTrxDetailArr[0].Memo, ", accountIDTest:", accountIDTest, ", ok1:", ok1)
-
-		accountIDTest, ok2 := scanTargetFunc(openwallet.ScanTarget{Address: tx.ToAddr, Symbol: bs.wm.Symbol(), BalanceModelType: openwallet.BalanceModelTypeAddress})
-		bs.wm.Log.Info("result.TxID:", result.TxID, ", toAddr:", toAddr, ", memo:", tx.ToTrxDetailArr[0].Memo, ", accountIDTest:", accountIDTest, ", ok2:", ok2)
-
-		accountIDTest, ok3 := scanTargetFunc(openwallet.ScanTarget{Address: tx.ToAddr, Symbol: bs.wm.Symbol(), BalanceModelType: openwallet.BalanceModelTypeAccount})
-		bs.wm.Log.Info("result.TxID:", result.TxID, ", toAddr:", toAddr, ", memo:", tx.ToTrxDetailArr[0].Memo, ", accountIDTest:", accountIDTest, ", ok3:", ok3)
+		//accountIDTest, ok1 := scanTargetFunc(openwallet.ScanTarget{Address: toAddr, Symbol: bs.wm.Symbol(), BalanceModelType: openwallet.BalanceModelTypeAddress})
+		//bs.wm.Log.Info("result.TxID:", result.TxID, ", toAddr:", toAddr, ", memo:", tx.ToTrxDetailArr[0].Memo, ", accountIDTest:", accountIDTest, ", ok1:", ok1)
+		//
+		//accountIDTest, ok2 := scanTargetFunc(openwallet.ScanTarget{Address: tx.ToAddr, Symbol: bs.wm.Symbol(), BalanceModelType: openwallet.BalanceModelTypeAddress})
+		//bs.wm.Log.Info("result.TxID:", result.TxID, ", toAddr:", toAddr, ", memo:", tx.ToTrxDetailArr[0].Memo, ", accountIDTest:", accountIDTest, ", ok2:", ok2)
+		//
+		//accountIDTest, ok3 := scanTargetFunc(openwallet.ScanTarget{Address: tx.ToAddr, Symbol: bs.wm.Symbol(), BalanceModelType: openwallet.BalanceModelTypeAccount})
+		//bs.wm.Log.Info("result.TxID:", result.TxID, ", toAddr:", toAddr, ", memo:", tx.ToTrxDetailArr[0].Memo, ", accountIDTest:", accountIDTest, ", ok3:", ok3)
 
 		if ok {
 			txExtractData := result.extractData[accountID]
