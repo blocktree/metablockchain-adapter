@@ -459,7 +459,7 @@ func (decoder *TransactionDecoder) createRawTransaction(wrapper openwallet.Walle
 		}
 	}
 
-	addrNodeBalance, err := decoder.wm.ApiClient.getBalance(from)
+	addrNodeBalance, err := decoder.wm.ApiClient.getBalance(address)
 	if err != nil {
 		return errors.New("Failed to get nonce when create summay transaction!")
 	}
@@ -484,7 +484,12 @@ func (decoder *TransactionDecoder) createRawTransaction(wrapper openwallet.Walle
 		return errors.New("Failed to get block height when create summay transaction!")
 	}
 
-	toPub, err := decoder.wm.Decoder.AddressDecode(to)
+	toBalance, err := decoder.wm.ApiClient.getBalance( to )
+	if err != nil {
+		return err
+	}
+
+	toPub, err := decoder.wm.Decoder.AddressDecode( toBalance.Address )
 	if err != nil {
 		return err
 	}
