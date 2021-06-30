@@ -236,6 +236,8 @@ func (c *Client) GetDidByAddress(address string) (string, error) {
 
 	did := gjson.Get(resp.Raw, "did").String()
 
+	did = RemoveSpecialChar(did)
+
 	return did, nil
 }
 
