@@ -248,8 +248,9 @@ func GetTransactionInBlock(json *gjson.Result, symbol string) ([]Transaction, er
 			}
 		}
 
-		isSimpleTransfer := section=="balances" && method=="transferWithMemo"
-		if isSimpleTransfer {
+		isSimpleTransferWithMemo := section=="balances" && method=="transferWithMemo"
+		isSimpleTransfer := section=="balances" && method=="transfer"
+		if isSimpleTransferWithMemo || isSimpleTransfer{
 			from := gjson.Get(extrinsicJSON.Raw, "senderDid").String()
 			to := gjson.Get(extrinsicJSON.Raw, "receiverDid").String()
 			amount := gjson.Get(extrinsicJSON.Raw, "amount").String()
