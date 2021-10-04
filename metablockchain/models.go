@@ -123,8 +123,18 @@ func GetTxMaterial(json *gjson.Result) *TxMaterial {
 	obj := &TxMaterial{}
 
 	obj.GenesisHash = gjson.Get(json.Raw, "genesisHash").String()
-	obj.SpecVersion = uint32(gjson.Get(json.Raw, "specVersion").Uint())
-	obj.TransactionVersion = uint32(gjson.Get(json.Raw, "transactionVersion").Uint())
+
+	//obj.SpecVersion = uint32(gjson.Get(json.Raw, "specVersion").Uint())
+	//obj.TransactionVersion = uint32(gjson.Get(json.Raw, "transactionVersion").Uint())
+
+	runtimeVersionJSON := gjson.Get(json.Raw, "runtimeVersion")
+	rv, err := GetRuntimeVersion( &runtimeVersionJSON )
+	if err!=nil {
+		return nil
+	}
+
+	obj.SpecVersion = rv.SpecVersion
+	obj.TransactionVersion = rv.TransactionVersion
 
 	return obj
 }
