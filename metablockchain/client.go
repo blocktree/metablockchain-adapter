@@ -2,6 +2,7 @@ package metablockchain
 
 import (
 	"errors"
+	"strconv"
 )
 
 const APIClientHttpMode = "http"
@@ -103,6 +104,10 @@ func (c *ApiClient) getBlockByHeight(height uint64) (*Block, error) {
 		block, err = c.Client.getBlockByHeight(height)
 		if err!=nil {
 			return nil, err
+		}
+
+		if block.Hash == "" {
+			return nil, errors.New("Block " + strconv.FormatUint(height, 10) + " no block hash")
 		}
 
 		for _, transaction := range block.Transactions {
