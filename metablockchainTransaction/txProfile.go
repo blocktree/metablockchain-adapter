@@ -3,7 +3,7 @@ package metablockchainTransaction
 import "github.com/blocktree/go-owcrypt"
 
 const (
-	Generic_Asset_Transfer = "0501"
+	Generic_Asset_Transfer = "0301"
 	SigningBitV4 = byte(0x84)
 	AccounntIDFollow = true
 
